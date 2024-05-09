@@ -1,1 +1,1 @@
-# Machine-Learning--fine-grained-classification
+# Machine-Learning--fine-grained-image-classification
