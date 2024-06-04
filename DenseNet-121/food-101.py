@@ -1,6 +1,7 @@
 import torch
 import torch.optim as optim
 import torch.nn as nn
+from PIL import Image
 import torchvision.transforms as transforms
 from torchvision.datasets import Food101
 from torch.utils.data import DataLoader
