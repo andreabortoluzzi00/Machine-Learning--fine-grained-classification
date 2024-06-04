@@ -9,7 +9,7 @@ from torchvision import models
 import matplotlib.pyplot as plt
 import numpy as np
 
-root_dir = './data/Food101'
+root_dir = './data'
 
 
 transform = transforms.Compose([
