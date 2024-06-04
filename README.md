@@ -1,4 +1,4 @@
-#Introduction to Machine Learning: Fine Grained Image Classification
+# Introduction to Machine Learning: Fine Grained Image Classification
 
 This is the repository for the Fine Grained Image Classification project for the Introduction to Machine Learning course at Msc Data Science at University of Trento
 
