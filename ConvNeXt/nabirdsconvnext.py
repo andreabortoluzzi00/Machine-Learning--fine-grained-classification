@@ -3,23 +3,22 @@ import sys
 import pandas as pd
 import sklearn
 import numpy as np
-from matplotlib import pyplot as plt
 import random
 import math
-from torch import nn
 import torchvision.models as models
 from torchvision.io import read_image
 from torchvision.io import ImageReadMode
-from efficient_kan import KAN
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch
 import torchvision
 import torchvision.transforms as transforms
 from tqdm import tqdm
-from transformers import AutoImageProcessor, ConvNextV2ForImageClassification, ConvNextV2Config
+from transformers import ConvNextV2ForImageClassification
+from torch.utils.data import Dataset
 
+
+# DataLoaders
 def load_class_names(dataset_path=''):
     names = {}
 
@@ -90,11 +89,6 @@ if __name__ == '__main__':
     # Load in the train / test split
     train_images, test_images = load_train_test_split(dataset_path)
 
-from torch.utils.data import Dataset
-from torchvision.io import read_image
-from torchvision.io import ImageReadMode
-
-
 class CustomImageDataset(Dataset):
     def __init__(self, image_class_labels, images, image_paths, dataset_path, test=False):
         self.img_labels = image_class_labels
@@ -135,30 +129,32 @@ valloader = torch.utils.data.DataLoader(test_data, shuffle=True)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-#resnet50 = ConvNextV2ForImageClassification.from_pretrained("facebook/convnextv2-tiny-1k-224",
+# Model (the instantiation is commented)
+#model = ConvNextV2ForImageClassification.from_pretrained("facebook/convnextv2-tiny-1k-224",
 #                                                        return_dict=False)
 #num_features = resnet50.classifier.in_features
-#resnet50.classifier = nn.Linear(num_features, len(class_names))
-resnet50 = torch.load("nabirdsconv.pt")
-resnet50.to(device)
-optimizer = optim.AdamW(resnet50.parameters(), lr=1e-3, weight_decay=1e-4)
+#model.classifier = nn.Linear(num_features, len(class_names))
+model = torch.load("nabirdsconv.pt")
+model.to(device)
+optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
 scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.8)
 
-for param in resnet50.parameters():
+# Freezing the parametrs not in the last layer
+for param in model.parameters():
     param.requires_grad = False
-for param in resnet50.classifier.parameters():
+for param in model.classifier.parameters():
     param.requires_grad = True
 
 criterion = nn.CrossEntropyLoss()
 
 for epoch in range(10):
     # Train
-    resnet50.train()
+    model.train()
     with tqdm(trainloader) as pbar:
         for i, (images, labels) in enumerate(pbar):
             images = images.to(device)
             optimizer.zero_grad()
-            output = resnet50(images)[0]
+            output = model(images)[0] # The model returns a tuple. We are interested only in the first element
             loss = criterion(output, labels.to(device))
             loss.backward()
             optimizer.step()
@@ -172,7 +168,7 @@ for epoch in range(10):
     with torch.no_grad():
         for images, labels in valloader:
             images = images.to(device)
-            output = resnet50(images)[0]
+            output = model(images)[0]
             val_loss += criterion(output, labels.to(device)).item()
             val_accuracy += (
                 (output.argmax(dim=1) == labels.to(device)).float().mean().item()
@@ -182,7 +178,7 @@ for epoch in range(10):
 
     # Update learning rate
     scheduler.step()
-    torch.save(resnet50, "nabirdsconv.pt")
+    torch.save(model, "nabirdsconv.pt")
     print(
         f"Epoch {epoch + 1}, Val Loss: {val_loss}, Val Accuracy: {val_accuracy}"
     )
