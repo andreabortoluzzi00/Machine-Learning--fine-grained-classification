@@ -7,5 +7,6 @@ from .bird_template import bird_template
 from .food_template import food_template
 from .Aircrafts import plane_template
 from .competition_template import competition_template
+
 ```
 
