@@ -7,18 +7,16 @@ import torchvision
 from torchvision.io import read_image
 from torchvision.io import ImageReadMode
 from efficient_kan import KAN
-import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchvision
 import torchvision.transforms as transforms
 import torchvision.models as models
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from PIL import Image
-from transformers import AutoImageProcessor, ConvNextV2ForImageClassification, ConvNextV2Config
+from transformers import ConvNextV2ForImageClassification
 
-
+# Submission function
 def submit(results, url="https://competition-production.up.railway.app/results/"):
     res = json.dumps(results)
     response = requests.post(url, res)
@@ -28,6 +26,7 @@ def submit(results, url="https://competition-production.up.railway.app/results/"
     except json.JSONDecodeError:
         print(f"ERROR: {response.text}")
 
+# DataLoader
 transform = transforms.Compose(
     [ lambda img: transforms.functional.resize(img, (224,224)),
       transforms.ToTensor()
@@ -40,12 +39,13 @@ trainloader = DataLoader(trainset, batch_size=64, shuffle=True)
 
 class_names = trainset.classes
 
+# Model
 model = ConvNextV2ForImageClassification.from_pretrained("facebook/convnextv2-base-22k-224",
                                                          return_dict=False)
 model.classifier = nn.Linear(model.classifier.in_features, len(class_names))
 
-
-#model = torch.load("convnextv2reallarge.pt")
+# Uncomment if you want to use an already saved model
+#model = torch.load("convnextv2base.pt")
 for param in model.parameters():
     param.requires_grad = False
 for param in model.classifier.parameters():
@@ -55,9 +55,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 # Define optimizer
-
-
-
 optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
 # Define learning rate scheduler
 scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.7)
@@ -79,7 +76,7 @@ for epoch in range(10):
     scheduler.step()
     # Validation
 
-    torch.save(model, "convnextv2base2.pt")
+    torch.save(model, "convnextv2base.pt")
 
     with torch.no_grad():
         #model = torch.load("convnextv2.pt")
