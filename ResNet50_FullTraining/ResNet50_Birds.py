@@ -100,13 +100,15 @@ class CustomImageDataset(Dataset):
         if self.test == False:
             transform = transforms.Compose([
                 transforms.Resize((256, 256)),
+                transforms.Normalize(torch.tensor([0.485, 0.456, 0.406]), torch.tensor([0.229, 0.224, 0.225])), 
                 transforms.RandomHorizontalFlip(),
                 transforms.RandomVerticalFlip(),
                 transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.5),
                 transforms.CenterCrop(224)
                 ])
         else:
-            transform = transforms.Compose([transforms.Resize((256, 256))])
+            transform = transforms.Compose([transforms.Resize((256, 256))],
+                                            transforms.Normalize(torch.tensor([0.485, 0.456, 0.406]), torch.tensor([0.229, 0.224, 0.225])))
         img_id = self.images[idx]
         img_path = os.path.join(dataset_path, image_paths[img_id])
         image = read_image(img_path, ImageReadMode.RGB )
@@ -117,18 +119,18 @@ class CustomImageDataset(Dataset):
 
         return image, label
 
+#Load the training data
 train_data = CustomImageDataset(image_class_labels, train_images, image_paths, dataset_path)
 train_loader = torch.utils.data.DataLoader(train_data, batch_size=64, shuffle=True)
 
 model = torchvision.models.resnet50(weights='DEFAULT')
 model.fc = nn.Linear(2048, 1011)
-device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
-model = torch.load('resnet_Birds_20iter.pth')
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 
 # Set hyperparameters
-num_epochs = 80
+num_epochs = 40
 batch_size = 128
 learning_rate = 0.001
 
@@ -164,7 +166,7 @@ for epoch in range(num_epochs):
     with open('myfile.txt', 'a') as f:
       f.write(f'Epoch {epoch+21}/{num_epochs}, Loss: {loss.item():.4f}\n')
 
-torch.save(model, "resnet_Birds_100iter.pth")
+torch.save(model, "resnet_Birds_40iter.pth")
 
 test_data = CustomImageDataset(image_class_labels, test_images, image_paths, dataset_path, test=True)
 test_loader = torch.utils.data.DataLoader(test_data, shuffle=True)
