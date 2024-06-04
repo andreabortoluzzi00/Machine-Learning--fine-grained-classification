@@ -7,17 +7,15 @@ import torchvision
 from torchvision.io import read_image
 from torchvision.io import ImageReadMode
 from efficient_kan import KAN
-import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchvision
 import torchvision.transforms as transforms
 import torchvision.models as models
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from PIL import Image
 
-
+# Submit function
 def submit(results, url="https://competition-production.up.railway.app/results/"):
     res = json.dumps(results)
     response = requests.post(url, res)
@@ -27,6 +25,7 @@ def submit(results, url="https://competition-production.up.railway.app/results/"
     except json.JSONDecodeError:
         print(f"ERROR: {response.text}")
 
+# DataLoader
 transform = transforms.Compose(
     [ lambda img: transforms.functional.resize(img, (256,256)),
       transforms.ToTensor()
@@ -36,15 +35,12 @@ transform = transforms.Compose(
 trainset = torchvision.datasets.ImageFolder(root='/home/disi/test1/competition_data/train',
                                            transform=transform)  ###Questo è il dataloader, basta mettere la cartella di train
 trainloader = DataLoader(trainset, batch_size=64, shuffle=True)
-#valset = torchvision.datasets.ImageFolder(root='/home/disi/competition_data/train',
-#                                          transform=transform)
-#valloader = DataLoader(valset, batch_size=64, shuffle=False)
-
 class_names = trainset.classes
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-####
+# Model (either a new one or the saved one)
+# The new instantiation is commented
 """
 resnet50 = models.resnet50(weights='DEFAULT')
 num_features = resnet50.fc.in_features
@@ -81,15 +77,14 @@ for epoch in range(5):
 
     # Update learning rate
     scheduler.step()
-####
 
 torch.save(resnet50, "resnet50block.pt")
-preds = {}
-directory = '/home/disi/test1/competition_data/test'  # La cartella con le immagini di test
 
-#valset = torchvision.datasets.ImageFolder(root='/home/disi/test1/competition_data/test',
-#                                          transform=transform)
-#valloader = DataLoader(valset, batch_size=64, shuffle=False)
+# Definition of the variables for the submission 
+preds = {}
+directory = '/home/disi/test1/competition_data/test'  # The folder with the test images
+
+# Uncomment if only the evaluation is needed and comment the training
 #resnet50 = torch.load("resnet50.pt")
 #resnet50.to(device)
 resnet50.eval()
@@ -99,15 +94,14 @@ for file in os.listdir(directory):
     image = Image.open(image_path)
     image = transform(image)
     image = image.to(device)
-    image = image.reshape(1, 3, 256, 256)
+    image = image.reshape(1, 3, 256, 256) # Needed for the model
     output = resnet50(image)
     result = int(torch.argmax(output))
-    preds[filename] = class_names[result].split("_")[0]
+    preds[filename] = class_names[result].split("_")[0] # Class label for the submission
 
 res = {
     "images": preds,
     "groupname": "Rick_Astley_Fanclub"
 }
 
-print(res)
 submit(res)
