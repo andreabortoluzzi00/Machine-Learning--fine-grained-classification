@@ -1,0 +1,14 @@
+python src/wise_ft.py   \
+    --train-dataset=Food101 \
+    --epochs=60  \
+    --lr=0.003  \
+    --batch-size=128  \
+    --cache-dir=cache  \
+    --model=ViT-B/16  \
+    --eval-datasets=Food101   \
+    --template=food_template  \
+    --results-db=results.jsonl  \
+    --save=Foodfinal  \
+    --data-location=/home/disi/intro2ml \
+    --alpha 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 \
+    --freeze-encoder
