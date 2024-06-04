@@ -8,7 +8,7 @@ python src/wise_ft.py   \
     --eval-datasets=Food101   \
     --template=food_template  \
     --results-db=results.jsonl  \
-    --save=Foodfinal  \
+    --save=Food_models  \
     --data-location=/home/disi/intro2ml \
     --alpha 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 \
     --freeze-encoder
