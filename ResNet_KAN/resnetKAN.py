@@ -1,5 +1,4 @@
 from efficient_kan import KAN
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -9,6 +8,7 @@ import torchvision.models as models
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
+# DataLoaders
 transform = transforms.Compose(
     [ lambda img: transforms.functional.resize(img, (256,256)),
       transforms.ToTensor()
@@ -28,6 +28,7 @@ valloader = DataLoader(valset, batch_size=64, shuffle=False)
 
 class_names = trainset.classes
 
+# Model
 resnet50 = models.resnet50(weights='DEFAULT')
 num_features = resnet50.fc.in_features
 resnet50.fc = KAN([num_features, 256, len(class_names)])
