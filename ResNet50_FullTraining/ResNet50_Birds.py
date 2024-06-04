@@ -168,6 +168,7 @@ for epoch in range(num_epochs):
 
 torch.save(model, "resnet_Birds_40iter.pth")
 
+#Load the test dataset
 test_data = CustomImageDataset(image_class_labels, test_images, image_paths, dataset_path, test=True)
 test_loader = torch.utils.data.DataLoader(test_data, shuffle=True)
 
@@ -180,6 +181,7 @@ def accuracy_fn(y_true, y_pred):
     acc = (correct / len(y_pred)) * 100 
     return acc
 
+#Evaluate the model accuracy
 with torch.inference_mode(): 
     for X, y in test_loader:
         # Send data to device
