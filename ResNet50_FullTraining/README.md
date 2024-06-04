@@ -2,4 +2,4 @@ This script allows to fully train a ResNet50 on the NABirds dataset. To speed th
 
 To run this model it is sufficient to change the 'dataset_path' variable to the dataset folder.
 
-The `ResNet50_env.yaml` file contains the information about the environment used for training, but any environment with `torch=2.3.0` and `torchvision==0.18.0`
+The `ResNet50_env.yaml` file contains the information about the environment used for training, but any environment with `torch=2.3.0` and `torchvision==0.18.0` should work properly.
