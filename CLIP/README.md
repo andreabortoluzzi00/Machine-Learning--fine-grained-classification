@@ -18,4 +18,6 @@ from .competition_dataset import competition_dataset
 from .FGVCAircraft import FGVCAircraft
 ```
 
+To run the training follow the instruction given in the original folder, the init.sh file included is an example.
+
 NOTE: the 0.8 version of torchvision required to run the wise-ft script does not include both the FGVCAircraft and the Food101 datasets but they can simply be added to the package by including the code https://pytorch.org/vision/main/_modules/torchvision/datasets/fgvc_aircraft.html#FGVCAircraft and https://pytorch.org/vision/main/_modules/torchvision/datasets/food101.html#Food101
