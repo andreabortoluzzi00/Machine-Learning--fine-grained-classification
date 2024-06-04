@@ -1,15 +1,15 @@
 import torch
 import torch.nn as nn
 from torchvision import datasets
-#import matplotlib.pyplot as plt
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 import numpy as np
-from transformers import AutoImageProcessor, ConvNextV2ForImageClassification, ConvNextV2Config
+from transformers import ConvNextV2ForImageClassification
 
+# DataLoaders
 transform = transforms.Compose(
     [ lambda img: transforms.functional.resize(img, (224,224)),
       transforms.ToTensor(),
@@ -29,9 +29,10 @@ valloader = DataLoader(valset, batch_size=64, shuffle=False)
 
 class_names = trainset.classes
 
-model = ConvNextV2ForImageClassification.from_pretrained("facebook/convnextv2-nano-1k-224",
+# Model
+model = ConvNextV2ForImageClassification.from_pretrained("facebook/convnextv2-tiny-33k-224",
                                                          return_dict=False)
-model.classifier = nn.Linear(640, len(class_names))
+model.classifier = nn.Linear(model.classifier.in_features, len(class_names))
 
 for param in model.parameters():
     param.requires_grad = False
@@ -54,7 +55,7 @@ for epoch in range(10):
         for i, (images, labels) in enumerate(pbar):
             images = images.to(device)
             optimizer.zero_grad()
-            output = model(images)[0]
+            output = model(images)[0] # The output of the model is a tuple. We are interested only in the first element
             loss = criterion(output, labels.to(device))
             loss.backward()
             optimizer.step()
