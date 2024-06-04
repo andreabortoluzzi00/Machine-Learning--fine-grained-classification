@@ -69,7 +69,7 @@ def load_train_test_split(dataset_path=''):
       
 if __name__ == '__main__':
   
-  dataset_path = '/home/disi/intro2ml/nabirds'
+  dataset_path = '/home/disi/intro2ml/nabirds'  #### Change this path to run the model
   image_path  = 'images'
   
   # Load in the image data
