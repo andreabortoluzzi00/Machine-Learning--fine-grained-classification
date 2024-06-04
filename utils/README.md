@@ -1,0 +1,1 @@
+This repository contains the dataloaders we wrote for the competition and a dataloader written with the structure of the NABirds dataset in mind, with a folder containing test documents linking images to classes.
