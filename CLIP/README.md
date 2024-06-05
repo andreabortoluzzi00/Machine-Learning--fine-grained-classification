@@ -1,6 +1,8 @@
 To utilize WiSe-FT to train a CLIP model refer to the original repository https://github.com/mlfoundations/wise-ft
 
-We created some custom templates to be added to the src/templates folder and the __init__ file should be edited to include:
+The NABirds dataset need to be downloaded beforehand, while Food101 and FGVCAircraft are downloaded automatically by the program.
+
+We created some custom templates to be added to the src/templates folder and the __init__ file  should be edited to include:
 
 ```
 from .bird_template import bird_template
