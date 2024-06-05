@@ -111,7 +111,7 @@ class CustomImageDataset(Dataset):
                                             transforms.Normalize(torch.tensor([0.485, 0.456, 0.406]), torch.tensor([0.229, 0.224, 0.225])))
         img_id = self.images[idx]
         img_path = os.path.join(dataset_path, image_paths[img_id])
-        image = read_image(img_path, ImageReadMode.RGB )
+        image = read_image(img_path, ImageReadMode.RGB ) #The ImageReadMode.RGB argument is required as some images are not in the RGB format
         image = transform(image)
         image = image/255
         
@@ -124,7 +124,7 @@ train_data = CustomImageDataset(image_class_labels, train_images, image_paths, d
 train_loader = torch.utils.data.DataLoader(train_data, batch_size=64, shuffle=True)
 
 model = torchvision.models.resnet50(weights='DEFAULT')
-model.fc = nn.Linear(2048, 1011)
+model.fc = nn.Linear(2048, 1011)  ## This can be changed to apply the program to another dataset
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
